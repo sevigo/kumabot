@@ -2,12 +2,24 @@ BASEDIR=${CURDIR}
 TMP=${BASEDIR}/tmp
 VENDOR_TMP=${TMP}/vendor
 LOCAL_BIN:=${TMP}/bin
+GOBIN=${BASEDIR}/bin
 PROJECT:=kumabot
 
-GO = /snap/bin/go
+VERSION ?= $(shell git describe --tags --abbrev=0)
+GIT_REVISION = $(shell git rev-parse HEAD)
+
+GO=go
+GOFLAGS=
+LOCAL_SERVICE_NAME=${GOBIN}/${PROJECT}
+LDFLAGS += -X kumabot/pkg/version.Version=$(VERSION)
+LDFLAGS += -X kumabot/pkg/version.Revision=$(GIT_REVISION)
+
 
 run:
-	cd cmd/${PROJECT}; go run main.go inject_server.go inject_line_bot.go wire_gen.go
+	@cd cmd/${PROJECT}; $(GO) run main.go inject_server.go inject_line_bot.go wire_gen.go
+
+build:
+	@cd cmd/${PROJECT} && $(GO) build $(GOFLAGS) -ldflags "$(LDFLAGS) -w -s" -o $(LOCAL_SERVICE_NAME)
 
 wire:
 	go get github.com/google/wire/cmd/wire
