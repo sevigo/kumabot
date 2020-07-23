@@ -14,11 +14,12 @@ import (
 
 func InitializeApplication(ctx context.Context, config2 config.Config) (application, error) {
 	mainHealthzHandler := provideHealthz()
+	mainVersionHandler := provideVersion()
 	lineBot := provideLineBot(config2)
 	kumaBots := provideKumaBots(ctx)
 	logger := provideLogger(config2)
 	botServer := webhookProvider(lineBot, kumaBots, logger)
-	handler := provideRouter(mainHealthzHandler, botServer)
+	handler := provideRouter(mainHealthzHandler, mainVersionHandler, botServer)
 	server := provideServer(handler, config2)
 	mainApplication := newApplication(server, lineBot)
 	return mainApplication, nil

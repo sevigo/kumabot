@@ -15,14 +15,17 @@ import (
 	"github.com/sevigo/kumabot/pkg/server"
 
 	"github.com/sevigo/kumabot/pkg/handler/health"
+	"github.com/sevigo/kumabot/pkg/handler/version"
 	"github.com/sevigo/kumabot/pkg/handler/webhook"
 )
 
 type healthzHandler http.Handler
+type versionHandler http.Handler
 
 var serverSet = wire.NewSet(
 	provideServer,
 	provideHealthz,
+	provideVersion,
 	provideLogger,
 	provideRouter,
 	provideKumaBots,
@@ -58,9 +61,11 @@ func webhookProvider(lineBot core.LineBot, kumaBots core.KumaBots, logger *logru
 	return webhook.New(lineBot, kumaBots, logger)
 }
 
-func provideRouter(healthz healthzHandler, webhook *webhook.BotServer) http.Handler {
+func provideRouter(healthz healthzHandler, version versionHandler, webhook *webhook.BotServer) http.Handler {
 	r := chi.NewRouter()
+	// TODO: move this endpoints to one handler
 	r.Mount("/healthz", healthz)
+	r.Mount("/version", version)
 	r.Mount("/", webhook.Handler())
 	return r
 }
@@ -68,4 +73,9 @@ func provideRouter(healthz healthzHandler, webhook *webhook.BotServer) http.Hand
 func provideHealthz() healthzHandler {
 	v := health.New()
 	return healthzHandler(v)
+}
+
+func provideVersion() versionHandler {
+	v := version.New()
+	return versionHandler(v)
 }
