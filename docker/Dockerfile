@@ -1,8 +1,7 @@
 # docker build --rm -f docker/Dockerfile -t sevigo/kumabot .
+# docker rm kumabot --force 
 # docker run -e OWM_API_KEY=$OWM_API_KEY -e LINE_CHANNEL_SECRET=$LINE_CHANNEL_SECRET -e LINE_CHANNEL_TOKEN=$LINE_CHANNEL_TOKEN \
-#   --publish 8081:8081 --rm  --detach --name kumabot kumabot:latest
-# docker rm --force 
-
+#   --publish 8081:8081 --rm --name kumabot kumabot:latest
 FROM golang:1.14.2
 
 COPY . /go/src/github.com/sevigo/kumabot
