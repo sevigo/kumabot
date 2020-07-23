@@ -21,6 +21,14 @@ run:
 build:
 	@cd cmd/${PROJECT} && $(GO) build $(GOFLAGS) -ldflags "$(LDFLAGS) -w -s" -o $(LOCAL_SERVICE_NAME)
 
+install:
+	@echo "Installing ${PROJECT}"
+	CGO_ENABLED=0 GOOS=linux ${GO} install -ldflags "$(LDFLAGS)" github.com/sevigo/kumabot/cmd/kumabot	
+
+image-push:
+	docker build -t sevigo/kumabot -f docker/Dockerfile .
+	docker push sevigo/kumabot
+
 wire:
 	go get github.com/google/wire/cmd/wire
 
